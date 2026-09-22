@@ -213,4 +213,5 @@ This repository now ignores common Node.js and generated runtime artifacts such 
 
 That keeps the GitHub repository smaller and focused on source, docs, and reusable generated samples.
 open public Swagger url:- https://fakerestapi.azurewebsites.net/index.html
+---
 Authenticated swagger Document url:- https://petstore.swagger.io/
