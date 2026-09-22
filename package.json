@@ -1,0 +1,11 @@
+{
+  "name": "swagger-to-playwright-workspace",
+  "version": "1.0.0",
+  "description": "Root workspace runner for Swagger to Playwright AI Agent Tool",
+  "private": true,
+  "scripts": {
+    "start": "npm --prefix Swagger2API_Playwright_API_Agent start",
+    "dev": "npm --prefix Swagger2API_Playwright_API_Agent run dev",
+    "test": "npm --prefix Swagger2API_Playwright_API_Agent test"
+  }
+}

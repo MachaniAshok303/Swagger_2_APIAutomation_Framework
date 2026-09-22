@@ -1,0 +1,61 @@
+# Dependencies
+node_modules/
+**/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+
+# Environment Variables
+.env
+.env.local
+.env.*
+!.env.example
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Test Outputs & Generated Artifacts
+test-results/
+**/test-results/
+playwright-report/
+**/playwright-report/
+allure-results/
+**/allure-results/
+allure-report/
+**/allure-report/
+coverage/
+**/coverage/
+dist/
+**/dist/
+build/
+**/build/
+tmp/
+**/tmp/
+temp/
+**/temp/
+logs/
+**/logs/
+Swagger2API_Playwright_API_Agent/generated_playwright_framework_fakerest/
+*.log
+*.zip
+scratch/
+
+# Tooling & IDE
+.playwright/
+**/.playwright/
+.playwright-cli/
+**/.playwright-cli/
+.vscode/
+.idea/
+
+# Cache
+.cache/
+**/.cache/
+.turbo/
+**/.turbo/
+.next/
+**/.next/

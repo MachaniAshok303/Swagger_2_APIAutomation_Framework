@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Swagger2API | AI Agent for Playwright Test Automation</title>
+  
+  <!-- Google Fonts & Lucide Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <link rel="stylesheet" href="style.css?v=1.0.5">
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Navbar Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="logo-icon">
+          <i data-lucide="bot"></i>
+        </div>
+        <div class="brand-text">
+          <h1>Swagger2API <span class="badge-ai">AI Agent</span></h1>
+          <p>Instant Scalable Playwright TypeScript API Test Automation Generator</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div class="enterprise-badge">
+          <i data-lucide="shield-check"></i> Enterprise API Automation Solution
+        </div>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <!-- Top Input & Configuration Panel -->
+      <section class="panel input-section">
+        <div class="section-title">
+          <h2><i data-lucide="file-up"></i> 1. Import Swagger / OpenAPI Document</h2>
+          <button id="loadPresetBtn" class="btn btn-secondary btn-sm">
+            <i data-lucide="sparkles"></i> Load Petstore Sample Spec
+          </button>
+        </div>
+
+        <!-- Swagger URL Input Bar -->
+        <div class="url-input-bar">
+          <div class="url-field">
+            <i data-lucide="globe"></i>
+            <input type="url" id="swaggerUrlInput" placeholder="Enter Swagger UI or OpenAPI URL (e.g. https://fakerestapi.azurewebsites.net/index.html)">
+          </div>
+          <button id="fetchUrlBtn" class="btn btn-accent">
+            <i data-lucide="cloud-download"></i> Fetch & Load
+          </button>
+        </div>
+
+        <!-- Document Access Health Check Banner -->
+        <div class="access-check-banner" id="accessCheckBanner" style="display: none;">
+          <div class="access-status-indicator" id="accessStatusDot"></div>
+          <div class="access-details">
+            <span class="access-title" id="accessTitle">Checking Document Access...</span>
+            <span class="access-meta" id="accessMeta">Latency: - | Status: -</span>
+          </div>
+        </div>
+
+        <div class="upload-grid">
+          <!-- Drag & Drop Zone -->
+          <div class="drop-zone" id="dropZone">
+            <input type="file" id="fileInput" accept=".json,.yaml,.yml">
+            <div class="drop-zone-content">
+              <div class="upload-icon"><i data-lucide="upload-cloud"></i></div>
+              <h3>Drag & drop Swagger JSON/YAML file</h3>
+              <p>Or click to browse from your system</p>
+              <div class="file-tag" id="fileInfo">No file selected</div>
+            </div>
+          </div>
+
+          <!-- Raw Input or URL -->
+          <div class="raw-input-container">
+            <label for="specTextArea">Or Paste OpenAPI JSON / YAML directly:</label>
+            <textarea id="specTextArea" placeholder='{"openapi": "3.0.0", "info": {"title": "My API"}, "paths": {...}}'></textarea>
+          </div>
+        </div>
+
+        <!-- Strategy Selector: User Choice for E2E Sequential, Positive & Negative Combinations -->
+        <div class="strategy-selector-panel" id="strategyPanel">
+          <div class="strategy-header">
+            <h3><i data-lucide="sliders"></i> Configure Test Generation Strategy</h3>
+            <span class="strategy-subtitle">Select the test combinations to synthesize</span>
+          </div>
+          <div class="strategy-options-grid">
+            <label class="strategy-card active" id="labelE2E">
+              <input type="checkbox" id="stratE2E" checked>
+              <div class="strat-content">
+                <div class="strat-title-row">
+                  <i data-lucide="git-merge" class="strat-icon"></i>
+                  <strong>1. Sequential E2E Workflow</strong>
+                  <span class="strat-badge badge-rec" id="badgeE2E">All APIs</span>
+                </div>
+                <p id="descE2E">Complete business journey touching all detected APIs in logical dependency sequence with shared ID passing</p>
+              </div>
+            </label>
+
+            <label class="strategy-card active" id="labelPositive">
+              <input type="checkbox" id="stratPositive" checked>
+              <div class="strat-content">
+                <div class="strat-title-row">
+                  <i data-lucide="check-circle-2" class="strat-icon"></i>
+                  <strong>2. Positive Combinations</strong>
+                  <span class="strat-badge badge-pos" id="badgePositive">Happy Path</span>
+                </div>
+                <p id="descPositive">CRUD happy paths, valid mock schemas, and status 200/201/204 verification across all endpoints</p>
+              </div>
+            </label>
+
+            <label class="strategy-card" id="labelNegative">
+              <input type="checkbox" id="stratNegative">
+              <div class="strat-content">
+                <div class="strat-title-row">
+                  <i data-lucide="alert-triangle" class="strat-icon"></i>
+                  <strong>3. Negative Combinations</strong>
+                  <span class="strat-badge badge-neg" id="badgeNegative">Boundary</span>
+                </div>
+                <p id="descNegative">Missing mandatory fields, invalid data types, non-existent IDs, and 400/404 error boundaries</p>
+              </div>
+            </label>
+
+            <label class="strategy-card" id="labelSecurity">
+              <input type="checkbox" id="stratSecurity">
+              <div class="strat-content">
+                <div class="strat-title-row">
+                  <i data-lucide="shield" class="strat-icon"></i>
+                  <strong>4. Security & Vulnerability</strong>
+                  <span class="strat-badge badge-sec" id="badgeSecurity">Security</span>
+                </div>
+                <p id="descSecurity">BOLA / IDOR checks, JWT 'none' algorithm bypass, SQL injection sanitization, and rate limiting</p>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Authentication Detection & API Try-Out Gate Panel -->
+        <div class="auth-gate-panel" id="authGatePanel" style="display: none;">
+          <div class="auth-gate-header">
+            <div class="auth-gate-status-badge" id="authStatusBadge">
+              <i data-lucide="shield-alert" id="authStatusIcon"></i>
+              <span id="authStatusText">Detecting Security Requirements...</span>
+            </div>
+            <span class="auth-gate-meta" id="authGateMeta">API Security Classification</span>
+          </div>
+
+          <!-- Public API Notice (Shown when APIs are public) -->
+          <div class="auth-public-notice" id="authPublicNotice" style="display: none;">
+            <!-- Populated dynamically with exact Phase 3 Public API content -->
+          </div>
+
+          <!-- Authenticated API Controls (Shown when auth is required) -->
+          <div class="auth-required-controls" id="authRequiredControls" style="display: none;">
+            <div class="auth-alert-box">
+              <div class="alert-icon"><i data-lucide="lock" style="color: var(--accent-amber);"></i></div>
+              <div class="alert-info">
+                <strong id="authRequiredTitle">Authentication Required</strong>
+                <p id="authRequiredDesc">Detected Authentication: Bearer Token / JWT. Please provide the required authentication token to validate the APIs.</p>
+              </div>
+            </div>
+
+            <!-- Dynamic Credential Input Group -->
+            <div class="auth-input-group">
+              <div class="input-with-label" id="apiKeyHeaderWrapper" style="display: none; max-width: 220px;">
+                <label for="apiKeyHeaderInput">Header Name:</label>
+                <div class="input-wrapper">
+                  <i data-lucide="tag" class="field-icon"></i>
+                  <input type="text" id="apiKeyHeaderInput" value="X-API-Key" placeholder="X-API-Key">
+                </div>
+              </div>
+
+              <div class="input-with-label" style="flex: 1;">
+                <label for="authTokenInput" id="authTokenLabel">Enter Bearer / JWT / Auth Token:</label>
+                <div class="input-wrapper">
+                  <i data-lucide="key" class="field-icon"></i>
+                  <input type="password" id="authTokenInput" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9... or Bearer token">
+                  <button type="button" class="btn-toggle-visibility" id="toggleTokenVisibility" title="Toggle visibility">
+                    <i data-lucide="eye"></i>
+                  </button>
+                </div>
+              </div>
+
+              <button id="validateAuthBtn" class="btn btn-accent btn-validate">
+                <i data-lucide="shield-check"></i> Validate Authentication
+              </button>
+            </div>
+
+            <!-- Probe Endpoint Config / Selector -->
+            <div class="probe-endpoint-bar">
+              <div class="probe-target-info">
+                <i data-lucide="crosshair" style="width: 16px; height: 16px; color: var(--accent-cyan);"></i>
+                <span>Probe Endpoint:</span>
+                <select id="probeEndpointSelect" class="probe-select"></select>
+                <code id="probeEndpointDisplay">/</code>
+              </div>
+              <span id="authProbeLatency" class="probe-latency"></span>
+            </div>
+
+            <!-- Live Try-Out Feedback Banner -->
+            <div class="tryout-feedback-box" id="tryoutFeedbackBox" style="display: none;">
+              <div class="feedback-icon" id="tryoutFeedbackIcon"></div>
+              <div class="feedback-text">
+                <strong id="tryoutFeedbackTitle"></strong>
+                <div id="tryoutFeedbackMsg"></div>
+                <div id="tryoutDiagnosticDetails" class="tryout-diagnostic-details" style="display: none;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Bar -->
+        <div class="action-bar">
+          <div class="status-pill" id="specStatus">
+            <i data-lucide="info"></i> Ready for spec input
+          </div>
+          <button id="generateBtn" class="btn btn-primary btn-lg" disabled>
+            <i data-lucide="wand-2"></i> Proceed with Generating Scripts
+          </button>
+        </div>
+      </section>
+
+      <!-- Spec Metrics Dashboard (Interactive Tabs) -->
+      <section class="panel spec-metrics" id="metricsSection" style="display: none;">
+        <div class="metric-card clickable-tab" id="tabApiInfo" data-tab="info" title="Click to view API Specification details">
+          <div class="metric-icon"><i data-lucide="layers"></i></div>
+          <div class="metric-info">
+            <span class="metric-val" id="metricTitle">-</span>
+            <span class="metric-lbl">API Name & Version</span>
+          </div>
+          <div class="tab-indicator"><i data-lucide="chevron-down"></i></div>
+        </div>
+        <div class="metric-card clickable-tab" id="tabEndpoints" data-tab="endpoints" title="Click to view all analyzed endpoints breakdown">
+          <div class="metric-icon"><i data-lucide="network"></i></div>
+          <div class="metric-info">
+            <span class="metric-val" id="metricEndpoints">0</span>
+            <span class="metric-lbl">Endpoints Analyzed</span>
+          </div>
+          <div class="tab-indicator"><i data-lucide="chevron-down"></i></div>
+        </div>
+        <div class="metric-card clickable-tab" id="tabControllers" data-tab="controllers" title="Click to view resource controllers & services">
+          <div class="metric-icon"><i data-lucide="folder-tree"></i></div>
+          <div class="metric-info">
+            <span class="metric-val" id="metricTags">0</span>
+            <span class="metric-lbl">Resource Controllers</span>
+          </div>
+          <div class="tab-indicator"><i data-lucide="chevron-down"></i></div>
+        </div>
+        <div class="metric-card clickable-tab" id="tabBaseUrl" data-tab="server" title="Click to view server & environment configuration">
+          <div class="metric-icon"><i data-lucide="globe"></i></div>
+          <div class="metric-info">
+            <span class="metric-val" id="metricBaseUrl">-</span>
+            <span class="metric-lbl">Resolved Base URL</span>
+          </div>
+          <div class="tab-indicator"><i data-lucide="chevron-down"></i></div>
+        </div>
+      </section>
+
+      <!-- Metrics Details Drawer / Panel -->
+      <section class="panel metric-details-panel" id="metricDetailsPanel" style="display: none;">
+        <div class="details-panel-header">
+          <div class="details-tab-title">
+            <i data-lucide="list" id="detailTabIcon"></i>
+            <h3 id="detailTabTitle">Details</h3>
+          </div>
+          <div class="details-panel-actions">
+            <input type="text" id="detailsSearchInput" placeholder="Filter endpoints..." class="details-search-box">
+            <button id="closeDetailsBtn" class="btn btn-ghost btn-sm"><i data-lucide="x"></i> Close Details</button>
+          </div>
+        </div>
+        <div class="details-panel-content" id="detailPanelContent">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </section>
+
+      <!-- Output Workbench Split View -->
+      <section class="workbench" id="workbenchSection" style="display: none;">
+        <!-- Left Sidebar: File Tree -->
+        <aside class="panel file-tree-panel">
+          <div class="panel-header">
+            <div class="panel-title-row">
+              <h3><i data-lucide="folder"></i> Framework Files</h3>
+            </div>
+            <div class="download-group">
+              <button id="downloadZipBtn" class="btn btn-success btn-sm" title="Download Playwright TS Framework">
+                <i data-lucide="download"></i> Playwright ZIP
+              </button>
+              <button id="downloadPostmanBtn" class="btn btn-postman btn-sm" title="Download Sequenced Postman Collection">
+                <i data-lucide="send"></i> Postman JSON
+              </button>
+            </div>
+          </div>
+          <div class="file-tree" id="fileTree">
+            <!-- Populated via JS -->
+          </div>
+        </aside>
+
+        <!-- Right Main View: Code Editor & Preview -->
+        <div class="panel code-editor-panel">
+          <div class="editor-header">
+            <div class="tab-info">
+              <i data-lucide="file-code" id="activeFileIcon"></i>
+              <span id="activeFilePath">playwright.config.ts</span>
+            </div>
+            <div class="editor-actions">
+              <button id="copyCodeBtn" class="btn btn-ghost btn-sm">
+                <i data-lucide="copy"></i> Copy Code
+              </button>
+              <button id="runSimulatedTestsBtn" class="btn btn-accent btn-sm">
+                <i data-lucide="play-circle"></i> Run Test Suite
+              </button>
+              <button id="viewAllureReportBtn" class="btn btn-allure btn-sm">
+                <i data-lucide="bar-chart-3"></i> View Execution Summary
+              </button>
+            </div>
+          </div>
+          
+          <pre class="code-view"><code id="codeViewer">Select a file from the tree to preview source code...</code></pre>
+        </div>
+      </section>
+
+      <!-- Allure Interactive Report Section -->
+      <section class="panel allure-panel" id="allureSection" style="display: none;">
+        <div class="panel-header">
+          <div class="allure-brand">
+            <div class="allure-logo">A</div>
+            <div>
+              <h3>Playwright Test Execution Summary</h3>
+              <p class="text-muted" style="font-size: 0.8rem;">Real server-side Playwright execution results for the generated framework</p>
+            </div>
+          </div>
+          <button id="closeAllureBtn" class="btn btn-ghost btn-sm"><i data-lucide="x"></i> Close Report</button>
+        </div>
+
+        <div class="allure-dashboard">
+          <div class="allure-stat-card card-passed">
+            <span class="allure-stat-number" id="allurePassed">100%</span>
+            <span class="allure-stat-label">Passed Ratio</span>
+          </div>
+          <div class="allure-stat-card card-total">
+            <span class="allure-stat-number" id="allureTotal">0</span>
+            <span class="allure-stat-label">Total Test Cases</span>
+          </div>
+          <div class="allure-stat-card card-duration">
+            <span class="allure-stat-number" id="allureDuration">1.24s</span>
+            <span class="allure-stat-label">Execution Duration</span>
+          </div>
+          <div class="allure-stat-card card-suites">
+            <span class="allure-stat-number" id="allureSuites">0</span>
+            <span class="allure-stat-label">Test Suites</span>
+          </div>
+        </div>
+
+        <div class="allure-suites-table">
+          <div class="table-header">
+            <span>Test Suite & Scenario</span>
+            <span>Status</span>
+            <span>Duration</span>
+            <span>Severity</span>
+          </div>
+          <div class="table-body" id="allureSuitesList">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Real Test Execution Panel -->
+      <section class="panel runner-panel" id="runnerPanel" style="display: none;">
+        <div class="panel-header">
+          <h3><i data-lucide="terminal"></i> Playwright Test Runner (Real Execution)</h3>
+          <div class="runner-stats">
+            <span class="badge badge-pass" id="passCount"><i data-lucide="check-circle-2"></i> 0 Passed</span>
+            <span class="badge badge-fail" id="failCount" style="display: inline-flex;"><i data-lucide="x-circle"></i> 0 Failed</span>
+            <span class="badge badge-skip" id="skipCount" style="display: inline-flex;"><i data-lucide="alert-circle"></i> 0 Skipped</span>
+            <span class="badge badge-total" id="totalCount">0 Total</span>
+          </div>
+        </div>
+        <div class="terminal-body" id="terminalOutput">
+          <div class="log-line text-muted">Starting Playwright Test Engine...</div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>Enterprise Playwright TypeScript API Test Automation Framework | Powered by AI Code Synthesizer</p>
+    </footer>
+  </div>
+
+  <script src="app.js?v=1.0.6"></script>
+</body>
+</html>

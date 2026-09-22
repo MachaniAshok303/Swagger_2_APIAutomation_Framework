@@ -1,0 +1,17 @@
+{
+  "missingRequired": {
+    "id": 10,
+    "status": "available"
+  },
+  "invalidTypes": {
+    "id": "not_a_valid_number_string",
+    "name": "doggie",
+    "status": "available"
+  },
+  "emptyPayload": {},
+  "nullValuePayload": {
+    "id": 10,
+    "name": null,
+    "status": "available"
+  }
+}

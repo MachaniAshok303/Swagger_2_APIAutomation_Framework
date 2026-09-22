@@ -1,0 +1,33 @@
+{
+  "name": "swagger2api-playwright-agent",
+  "version": "1.0.0",
+  "description": "AI Agent Tool to convert Swagger / OpenAPI specs to scalable Playwright TypeScript API Automation Frameworks",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node tests/parser.test.js && node tests/generator.test.js && node tests/api.test.js",
+    "generate:disk": "node scripts/generateToDisk.js"
+  },
+  "keywords": [
+    "swagger",
+    "openapi",
+    "playwright",
+    "typescript",
+    "api-testing",
+    "ai-agent",
+    "test-automation"
+  ],
+  "author": "SDET AI Squad",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "docx": "^9.7.1",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "jszip": "^3.10.1",
+    "multer": "^1.4.5-lts.1",
+    "pptxgenjs": "^4.0.1",
+    "yaml": "^2.4.2"
+  }
+}

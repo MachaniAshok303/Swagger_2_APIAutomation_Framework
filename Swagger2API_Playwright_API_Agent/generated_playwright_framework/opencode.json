@@ -1,0 +1,61 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "amplify": {
+      "npm": "@ai-sdk/openai",
+      "name": "Amplify OpenAI Proxy",
+      "options": {
+        "baseURL": "https://amplify.planittesting.com/openai",
+        "apiKey": "a663c977-018d-4b59-8059-0cf0605fa266"
+      },
+      "models": {
+        "gpt-4-dev": {
+          "name": "GPT-4 Dev (gpt-4.1)",
+          "options": {
+            "temperature": 0.2
+          },
+          "limit": {
+            "context": 128000,
+            "input": 128000,
+            "output": 15000
+          }
+        },
+        "gpt-5.1": {
+          "name": "GPT-5.1",
+          "options": {
+            "reasoningEffort": "low",
+            "textVerbosity": "low"
+          },
+          "limit": {
+            "context": 128000,
+            "input": 128000,
+            "output": 15000
+          }
+        },
+        "gpt-5.1-codex": {
+          "name": "GPT-5.1 Codex",
+          "options": {
+            "reasoningEffort": "medium"
+          },
+          "limit": {
+            "context": 128000,
+            "input": 128000,
+            "output": 15000
+          }
+        },
+        "gpt-5.4-opencode": {
+          "name": "GPT-5.4 OpenCode",
+          "options": {
+            "reasoningEffort": "medium"
+          },
+          "limit": {
+            "context": 128000,
+            "input": 128000,
+            "output": 15000
+          }
+        }
+      }
+    }
+  },
+  "model": "amplify/gpt-5.4-opencode"
+}

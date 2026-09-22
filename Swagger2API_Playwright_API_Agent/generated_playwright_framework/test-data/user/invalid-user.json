@@ -1,0 +1,20 @@
+{
+  "missingRequired": {
+    "id": 100,
+    "email": "john@example.com",
+    "password": "secret123"
+  },
+  "invalidTypes": {
+    "id": "not_a_valid_number_string",
+    "username": "john_doe",
+    "email": "john@example.com",
+    "password": "secret123"
+  },
+  "emptyPayload": {},
+  "nullValuePayload": {
+    "id": 100,
+    "username": null,
+    "email": "john@example.com",
+    "password": "secret123"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "missingRequired": {
+    "id": 1,
+    "quantity": 2,
+    "status": "placed",
+    "complete": true
+  },
+  "invalidTypes": {
+    "id": "not_a_valid_number_string",
+    "petId": 10,
+    "quantity": 2,
+    "status": "placed",
+    "complete": true
+  },
+  "emptyPayload": {},
+  "nullValuePayload": {
+    "id": 1,
+    "petId": null,
+    "quantity": 2,
+    "status": "placed",
+    "complete": true
+  }
+}

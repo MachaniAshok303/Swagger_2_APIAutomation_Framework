@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Swagger2API AI Agent - Hackathon Presentation</title>
+  <style>
+    :root {
+      --bg-dark: #0F172A;
+      --card-bg: #1E293B;
+      --card-border: #334155;
+      --text-light: #F8FAFC;
+      --text-muted: #94A3B8;
+      --accent-cyan: #06B6D4;
+      --accent-purple: #8B5CF6;
+      --accent-green: #10B981;
+      --accent-pink: #EC4899;
+      --font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-light);
+      font-family: var(--font-family);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Presentation Container */
+    .deck-container {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Slide Card */
+    .slide {
+      position: absolute;
+      width: 90%;
+      max-width: 1280px;
+      height: 85%;
+      max-height: 720px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 48px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 30px rgba(6, 182, 212, 0.1);
+      opacity: 0;
+      transform: scale(0.95) translateY(20px);
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .slide.active {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+      pointer-events: auto;
+    }
+
+    .slide.previous {
+      opacity: 0;
+      transform: scale(0.95) translateY(-20px);
+    }
+
+    /* Slide Header */
+    .slide-header {
+      margin-bottom: 24px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 14px;
+      background: rgba(6, 182, 212, 0.15);
+      border: 1px solid var(--accent-cyan);
+      color: var(--accent-cyan);
+      font-size: 0.85rem;
+      font-weight: 700;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+
+    .slide-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--text-light);
+      line-height: 1.2;
+    }
+
+    .slide-subtitle {
+      font-size: 1.1rem;
+      color: var(--accent-cyan);
+      margin-top: 6px;
+    }
+
+    /* Slide Content Grid */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      flex: 1;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 20px;
+      flex: 1;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      flex: 1;
+    }
+
+    .feature-card {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s ease;
+    }
+
+    .feature-card:hover {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
+    }
+
+    .feature-card h3 {
+      font-size: 1.25rem;
+      color: var(--accent-cyan);
+      margin-bottom: 12px;
+    }
+
+    .feature-card p {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Table Styling */
+    .styled-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 0.95rem;
+    }
+
+    .styled-table th {
+      background: #334155;
+      color: var(--text-light);
+      text-align: left;
+      padding: 12px 16px;
+      font-weight: 700;
+    }
+
+    .styled-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--card-border);
+      color: var(--text-muted);
+    }
+
+    .styled-table tr:hover td {
+      background: rgba(255,255,255,0.03);
+      color: var(--text-light);
+    }
+
+    .highlight-green {
+      color: var(--accent-green);
+      font-weight: 700;
+    }
+
+    /* Big Metric Callouts */
+    .metric-card {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--accent-green);
+      border-radius: 16px;
+      padding: 32px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .metric-value {
+      font-size: 3.5rem;
+      font-weight: 900;
+      color: var(--accent-green);
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+
+    .metric-label {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text-light);
+    }
+
+    .metric-sub {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    /* Slide Footer */
+    .slide-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Controls Bar */
+    .controls-bar {
+      height: 60px;
+      background: #0B1120;
+      border-top: 1px solid var(--card-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 32px;
+      z-index: 100;
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-light);
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn:hover {
+      background: var(--accent-cyan);
+      color: #000;
+      border-color: var(--accent-cyan);
+    }
+
+    .progress-container {
+      flex: 1;
+      max-width: 400px;
+      margin: 0 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .progress-bar {
+      flex: 1;
+      height: 6px;
+      background: var(--card-border);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--accent-cyan);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .counter {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      min-width: 60px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="deck-container" id="deck">
+
+    <!-- SLIDE 1: Title -->
+    <div class="slide active">
+      <div>
+        <span class="badge">AI HACKATHON 15-MINUTE PITCH</span>
+        <h1 class="slide-title" style="font-size: 3rem; margin-top: 8px;">Swagger2API AI Agent</h1>
+        <p class="slide-subtitle" style="font-size: 1.4rem;">Enterprise Autonomous Playwright TypeScript API Test Automation Accelerator</p>
+      </div>
+
+      <div class="feature-card" style="border-color: var(--accent-cyan); background: rgba(6, 182, 212, 0.05); margin: 32px 0;">
+        <h3 style="font-size: 1.5rem; color: var(--accent-green); margin-bottom: 8px;">
+          Converting 3–5 Days of Manual Setup into &lt; 2 Seconds of AI Synthesis
+        </h3>
+        <p style="font-size: 1.1rem; color: var(--text-light);">
+          Target Audience: AI SDETs, QA Managers, API Testers, Functional QA Engineers & Tech Leads
+        </p>
+      </div>
+
+      <div class="slide-footer">
+        <span>Presenter: SDET AI Squad</span>
+        <span>Framework: Playwright TypeScript + Postman MCP</span>
+      </div>
+    </div>
+
+    <!-- SLIDE 2: Problem Statement -->
+    <div class="slide">
+      <div class="slide-header">
+        <span class="badge">00:00 - 02:00 | Problem Relevance</span>
+        <h2 class="slide-title">The Crisis in API Quality: Manual Setup Bottleneck</h2>
+      </div>
+
+      <div class="grid-2">
+        <div class="feature-card">
+          <h3>01. 3 to 5 Days Setup Duration</h3>
+          <p>QA squads spend days creating HTTP wrappers, typing interfaces, setting up fixtures & environment configs manually for every microservice.</p>
+        </div>
+        <div class="feature-card">
+          <h3>02. Shallow Test Coverage</h3>
+          <p>Under sprint pressure, teams only write basic 200 OK happy paths, neglecting boundary status codes (400/404/422) and security checks.</p>
+        </div>
+        <div class="feature-card">
+          <h3>03. Architectural Inconsistency</h3>
+          <p>Hardcoded request logic across squads leads to brittle code that breaks whenever backend engineers change API schemas.</p>
+        </div>
+        <div class="feature-card">
+          <h3>04. Redundant Auth Overhead</h3>
+          <p>Lack of token caching re-authenticates every test step, causing 429 rate limits & slowing down CI pipeline execution.</p>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Swagger2API AI Agent</span>
+        <span>Slide 2 of 12</span>
+      </div>
+    </div>
+
+    <!-- SLIDE 3: Why This Framework & ROI -->
+    <div class="slide">
+      <div class="slide-header">
+        <span class="badge">02:00 - 05:00 | Time / Effort Saved</span>
+        <h2 class="slide-title">Why Playwright TypeScript? Solution & 99.9% ROI</h2>
+      </div>
+
+      <div class="grid-2">
+        <div class="feature-card">
+          <h3 style="color: var(--accent-cyan);">Playwright TS Core Advantages</h3>
+          <ul style="color: var(--text-light); line-height: 1.8; margin-left: 20px; font-size: 0.95rem;">
+            <li><strong>Native APIRequestContext:</strong> Executes HTTP requests headless at ultra-fast speeds without browser overhead.</li>
+            <li><strong>Compile-Time Type Safety:</strong> Strongly-typed TypeScript interfaces catch contract mismatches before execution.</li>
+            <li><strong>Custom Fixture Injection:</strong> Injects domain services directly into specs with automated lifecycle cleanup.</li>
+          </ul>
+        </div>
+
+        <div>
+          <table class="styled-table">
+            <thead>
+              <tr>
+                <th>Metric</th>
+                <th>Traditional Manual</th>
+                <th style="color: var(--accent-cyan);">Swagger2API Agent</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Setup Time</td>
+                <td>3 to 5 Days</td>
+                <td class="highlight-green">&lt; 2 Seconds (99.9% Faster)</td>
+              </tr>
+              <tr>
+                <td>Coverage</td>
+                <td>Happy Path Only</td>
+                <td class="highlight-green">100% (CRUD, Schema, Security)</td>
+              </tr>
+              <tr>
+                <td>Architecture</td>
+                <td>Inconsistent</td>
+                <td style="color: var(--text-light);">4-Tier Clean Code</td>
+              </tr>
+              <tr>
+                <td>Auth Risk</td>
+                <td>High (Re-login)</td>
+                <td class="highlight-green">Zero (In-Memory Token Cache)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Swagger2API AI Agent</span>
+        <span>Slide 3 of 12</span>
+      </div>
+    </div>
+
+    <!-- SLIDE 4: Architecture Overview -->
+    <div class="slide">
+      <div class="slide-header">
+        <span class="badge">05:00 - 09:00 | Clean Architecture</span>
+        <h2 class="slide-title">How It Works: Clean 4-Tier Framework Architecture</h2>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 12px; flex: 1;">
+        <div class="feature-card" style="padding: 16px 24px;">
+          <h3 style="margin-bottom: 4px;">TIER 1: CLIENT LAYER <span>(baseApiClient.ts, tokenManager.ts, &lt;resource&gt;Client.ts)</span></h3>
+          <p>HTTP engine wrapper, header injection, in-memory token caching, latency recording & secret masking.</p>
+        </div>
+        <div class="feature-card" style="padding: 16px 24px;">
+          <h3 style="margin-bottom: 4px;">TIER 2: SERVICE LAYER <span>(&lt;resource&gt;.service.ts, authManager.ts)</span></h3>
+          <p>Encapsulates business operations, payload synthesis, and domain logic away from test specs.</p>
+        </div>
+        <div class="feature-card" style="padding: 16px 24px;">
+          <h3 style="margin-bottom: 4px;">TIER 3: FIXTURES & DATA <span>(api.fixture.ts, dataGenerator.ts, &lt;resource&gt;.model.ts)</span></h3>
+          <p>Injects services via Playwright fixtures; manages strongly-typed models & dynamic test data generators.</p>
+        </div>
+        <div class="feature-card" style="padding: 16px 24px;">
+          <h3 style="margin-bottom: 4px;">TIER 4: TEST SUITES <span>(smoke/, regression/, contract/, e2e/, negative/, security/)</span></h3>
+          <p>Independent test specs covering CRUD, AJV schema verification, dynamic ID correlation & OWASP security.</p>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Swagger2API AI Agent</span>
+        <span>Slide 4 of 12</span>
+      </div>
+    </div>
+
+    <!-- SLIDE 5: File Breakdown - Tool Engine -->
+    <div class="slide">
+      <div class="slide-header">
+        <span class="badge">05:00 - 09:00 | Tool Implementation</span>
+        <h2 class="slide-title">File-by-File Breakdown: AI Agent Tool Engine</h2>
+      </div>
+
+      <div class="grid-2">
+        <div class="feature-card">
+          <h3>server.js</h3>
+          <p>Express application server hosting REST endpoints for spec loading, AST parsing, strategy config, ZIP synthesis, test runner execution, and Allure report rendering.</p>
+        </div>
+        <div class="feature-card">
+          <h3>services/swaggerParser.js</h3>
+          <p>Contract resolver ingesting raw JSON/YAML or scraping live Swagger UI HTML portals (Spring Boot, FastAPI, ASP.NET, NestJS). Extracts paths, params, headers, and schemas.</p>
+        </div>
+        <div class="feature-card">
+          <h3>services/codeGenerator.js</h3>
+          <p>Synthesis engine transpiling metadata into modular TypeScript classes, models, AJV schemas, custom fixtures, regression suites, and GitHub Actions workflows.</p>
+        </div>
+        <div class="feature-card">
+          <h3>services/postmanGenerator.js</h3>
+          <p>Synthesizes Postman Collection v2.1 files organized into ordered folders (Positive Happy Paths followed by Negative Boundaries) with embedded test assertions.</p>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Swagger2API AI Agent</span>
+        <span>Slide 5 of 12</span>
+      </div>
+    </div>
+
+    <!-- SLIDE 6: File Breakdown - Generated Framework -->
+    <div class="slide">
+      <div class="slide-header">
+        <span class="badge">05:00 - 09:00 | Generated Codebase</span>
+        <h2 class="slide-title">File-by-File Breakdown: Generated Framework Codebase</h2>
+      </div>
+
+      <div class="grid-2">
+        <div class="feature-card">
+          <h3>Infrastructure & Config</h3>
+          <p>• <code>playwright.config.ts</code> — Playwright test runner config<br>• <code>config/environments/</code> — Multi-env base URLs (dev, qa, prod)<br>• <code>.github/workflows/api-tests.yml</code> — CI/CD automation pipeline</p>
+        </div>
+        <div class="feature-card">
+          <h3>Clients & Authentication</h3>
+          <p>• <code>src/clients/baseApiClient.ts</code> — Central HTTP wrapper with secret masking<br>• <code>src/utils/tokenManager.ts</code> — In-memory OAuth2/JWT token caching<br>• <code>src/clients/&lt;resource&gt;Client.ts</code> — Endpoint client methods</p>
+        </div>
+        <div class="feature-card">
+          <h3>Services & Test Data</h3>
+          <p>• <code>src/services/&lt;resource&gt;.service.ts</code> — Domain business logic wrappers<br>• <code>src/fixtures/api.fixture.ts</code> — Playwright fixture service injection<br>• <code>src/utils/dataGenerator.ts</code> — Dynamic emails, UUIDs & timestamps</p>
+        </div>
+        <div class="feature-card">
+          <h3>Comprehensive Test Suites</h3>
+          <p>• <code>tests/smoke/</code> — Reachability smoke checks<br>• <code>tests/e2e/e2e-workflow.spec.ts</code> — Dynamic ID correlation workflow<br>• <code>tests/negative/ & security/</code> — 400/404/422 & OWASP security suites</p>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Swagger2API AI Agent</span>
+        <span>Slide 6 of 12</span>
+      </div>
+    </div>
+
+    <!-- SLIDE 7: Agentic Depth -->
+    <div class="slide">
+      <div class="slide-header">
+        <span class="badge">09:00 - 12:00 | Agentic Depth</span>
+        <h2 class="slide-title">Agentic Depth: 3 Pillars of AI Autonomy</h2>
+      </div>
+
+      <div class="grid-3">
+        <div class="feature-card">
+          <span style="color: var(--accent-cyan); font-weight: 700; font-size: 0.85rem;">PILLAR 1</span>
+          <h3 style="margin-top: 4px;">Smart HTML Portal Scraping</h3>
+          <p>Automatically inspects live Swagger UI HTML portals (Spring Boot, FastAPI, ASP.NET, NestJS), resolves underlying OpenAPI JSON endpoints, and verifies document accessibility.</p>
+        </div>
+        <div class="feature-card">
+          <span style="color: var(--accent-purple); font-weight: 700; font-size: 0.85rem;">PILLAR 2</span>
+          <h3 style="margin-top: 4px;">Dynamic Entity ID Correlation</h3>
+          <p>Analyzes entity relationships, captures primary IDs from POST creation responses, and dynamically passes them downstream to GET, PUT, and DELETE operations with teardown verification.</p>
+        </div>
+        <div class="feature-card">
+          <span style="color: var(--accent-green); font-weight: 700; font-size: 0.85rem;">PILLAR 3</span>
+          <h3 style="margin-top: 4px;">OWASP & Boundary Synthesis</h3>
+          <p>Synthesizes negative test matrices (missing fields, invalid data types, non-existent IDs) alongside OWASP API security suites (BOLA/IDOR, SQLi, JWT alg bypass).</p>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Swagger2API AI Agent</span>
+        <span>Slide 7 of 12</span>
+      </div>
+    </div>
+
+    <!-- SLIDE 8: Accuracy & Reliability -->
+    <div class="slide">
+      <div class="slide-header">
+        <span class="badge">09:00 - 12:00 | Accuracy & Reliability</span>
+        <h2 class="slide-title">Accuracy & Reliability: Resilient Test Engineering</h2>
+      </div>
+
+      <div class="grid-2">
+        <div class="feature-card" style="border-color: var(--accent-green);">
+          <h3 style="color: var(--accent-green);">✓ AJV Schema Validation</h3>
+          <p>Compiles OpenAPI response schemas with Ajv to ensure 100% contract compliance at runtime, catching schema drift automatically.</p>
+        </div>
+        <div class="feature-card" style="border-color: var(--accent-green);">
+          <h3 style="color: var(--accent-green);">✓ In-Memory Token Caching</h3>
+          <p>Caches auth tokens across parallel suites to avoid 429 rate-limiting and redundant authentication calls.</p>
+        </div>
+        <div class="feature-card" style="border-color: var(--accent-green);">
+          <h3 style="color: var(--accent-green);">✓ Sensitive Secret Masking</h3>
+          <p>Logs HTTP methods, URLs, status & latency while automatically redacting sensitive headers (Authorization, Bearer, Passwords).</p>
+        </div>
+        <div class="feature-card" style="border-color: var(--accent-green);">
+          <h3 style="color: var(--accent-green);">✓ Isolated Test Lifecycles</h3>
+          <p>Independent test suites prevent state leakage; teardown routines cleanly delete created entities after test runs.</p>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Swagger2API AI Agent</span>
+        <span>Slide 8 of 12</span>
+      </div>
+    </div>
+
+    <!-- SLIDE 9: Enterprise Adaptability & Postman MCP -->
+    <div class="slide">
+      <div class="slide-header">
+        <span class="badge">12:00 - 13:30 | Practicality & Adaptability</span>
+        <h2 class="slide-title">Enterprise Adaptability & Postman MCP Integration</h2>
+      </div>
+
+      <div class="grid-2">
+        <div class="feature-card">
+          <h3 style="color: var(--accent-cyan);">Zero-Friction Team Onboarding</h3>
+          <p style="margin-bottom: 12px;"><strong>For SDETs & Leads:</strong> Complete Playwright TS project .zip with Allure reporting & GitHub Actions.</p>
+          <p style="margin-bottom: 12px;"><strong>For Functional QA:</strong> Sequenced Postman Collection v2.1 export with embedded test assertions.</p>
+          <p><strong>For QA Managers:</strong> Standardized architecture, zero vendor lock-in, and 100% Day-1 API coverage.</p>
+        </div>
+
+        <div class="feature-card" style="border-color: var(--accent-purple);">
+          <h3 style="color: var(--accent-purple);">Postman MCP Server Integration</h3>
+          <p style="margin-bottom: 8px;"><strong>1. Workspace Discovery:</strong> Scans target API workspaces automatically.</p>
+          <p style="margin-bottom: 8px;"><strong>2. Live Collection Sync:</strong> Uploads positive & negative collections instantly.</p>
+          <p><strong>3. Cloud Execution:</strong> Triggers Newman or Postman Cloud runner and streams execution insights back to the agent.</p>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Swagger2API AI Agent</span>
+        <span>Slide 9 of 12</span>
+      </div>
+    </div>
+
+    <!-- SLIDE 10: Live Demo Workflow -->
+    <div class="slide">
+      <div class="slide-header">
+        <span class="badge">13:30 - 15:00 | Live Demo</span>
+        <h2 class="slide-title">Live Demonstration Workflow (15-Minute Pitch)</h2>
+      </div>
+
+      <div class="grid-4">
+        <div class="feature-card" style="text-align: center;">
+          <div style="font-size: 2.5rem; font-weight: 900; color: var(--accent-cyan);">01</div>
+          <h3>Paste URL & Fetch</h3>
+          <p>Input Swagger UI URL. Smart resolver extracts 27 endpoints in 300ms.</p>
+        </div>
+        <div class="feature-card" style="text-align: center;">
+          <div style="font-size: 2.5rem; font-weight: 900; color: var(--accent-cyan);">02</div>
+          <h3>Configure Strategy</h3>
+          <p>Toggle options: Sequential E2E, CRUD, AJV Schemas, Negative & Security.</p>
+        </div>
+        <div class="feature-card" style="text-align: center;">
+          <div style="font-size: 2.5rem; font-weight: 900; color: var(--accent-cyan);">03</div>
+          <h3>Synthesize Suite</h3>
+          <p>Click Generate. Complete 4-tier framework synthesized in &lt; 2 seconds.</p>
+        </div>
+        <div class="feature-card" style="text-align: center;">
+          <div style="font-size: 2.5rem; font-weight: 900; color: var(--accent-cyan);">04</div>
+          <h3>Execute & Report</h3>
+          <p>Run tests live and inspect Allure report with latency, payloads & assertions.</p>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Swagger2API AI Agent</span>
+        <span>Slide 10 of 12</span>
+      </div>
+    </div>
+
+    <!-- SLIDE 11: Q&A Defense -->
+    <div class="slide">
+      <div class="slide-header">
+        <span class="badge">13:30 - 15:00 | Q&A Readiness</span>
+        <h2 class="slide-title">Judge Q&A Defense Playbook</h2>
+      </div>
+
+      <div class="grid-2">
+        <div class="feature-card">
+          <h3 style="font-size: 1.1rem;">Q: How do you handle API contract updates?</h3>
+          <p>Re-run generator in 2s. Domain service abstraction keeps existing test specs intact without breaking changes.</p>
+        </div>
+        <div class="feature-card">
+          <h3 style="font-size: 1.1rem;">Q: How do you handle complex OAuth2 authentication?</h3>
+          <p>Centralized TokenManager caches tokens in-memory and handles auto-refresh without redundant auth calls.</p>
+        </div>
+        <div class="feature-card">
+          <h3 style="font-size: 1.1rem;">Q: What if the Swagger spec is poorly documented?</h3>
+          <p>Parser infers parameter data types, example values, and applies safe fallbacks for missing metadata.</p>
+        </div>
+        <div class="feature-card">
+          <h3 style="font-size: 1.1rem;">Q: How does this differ from Postman converters?</h3>
+          <p>Converters do naive syntax translation. Swagger2API synthesizes clean 4-tier TS architecture, AJV, and E2E chaining.</p>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Swagger2API AI Agent</span>
+        <span>Slide 11 of 12</span>
+      </div>
+    </div>
+
+    <!-- SLIDE 12: Conclusion -->
+    <div class="slide">
+      <div style="text-align: center; margin-bottom: 24px;">
+        <span class="badge">AUTONOMOUS QUALITY ENGINEERING</span>
+        <h2 class="slide-title" style="font-size: 2.8rem; margin-top: 8px;">Swagger2API AI Agent</h2>
+      </div>
+
+      <div class="grid-3">
+        <div class="metric-card">
+          <div class="metric-value">99.9%</div>
+          <div class="metric-label">Setup Time Saved</div>
+          <div class="metric-sub">From 3-5 days to &lt; 2 seconds</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">100%</div>
+          <div class="metric-label">Day-1 API Coverage</div>
+          <div class="metric-sub">CRUD, AJV, Negative & Security</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">4-Tier</div>
+          <div class="metric-label">Clean Architecture</div>
+          <div class="metric-sub">Zero architectural drift across teams</div>
+        </div>
+      </div>
+
+      <div style="text-align: center; margin-top: 32px;">
+        <p style="font-size: 1.3rem; color: var(--accent-cyan); font-weight: 700;">
+          Thank you! Try the live tool dashboard at http://localhost:3000
+        </p>
+      </div>
+
+      <div class="slide-footer">
+        <span>Swagger2API AI Agent</span>
+        <span>Slide 12 of 12</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Controls Bar -->
+  <div class="controls-bar">
+    <div class="nav-buttons">
+      <button class="btn" id="prevBtn">← Previous</button>
+      <button class="btn" id="nextBtn">Next →</button>
+    </div>
+
+    <div class="progress-container">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="counter" id="counter">1 / 12</div>
+    </div>
+
+    <div>
+      <button class="btn" id="fullscreenBtn">⛶ Fullscreen</button>
+    </div>
+  </div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const counter = document.getElementById('counter');
+    const progressFill = document.getElementById('progressFill');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+
+    let currentSlide = 0;
+    const totalSlides = slides.length;
+
+    function updateSlides() {
+      slides.forEach((slide, idx) => {
+        slide.classList.remove('active', 'previous');
+        if (idx === currentSlide) {
+          slide.classList.add('active');
+        } else if (idx < currentSlide) {
+          slide.classList.add('previous');
+        }
+      });
+
+      counter.textContent = `${currentSlide + 1} / ${totalSlides}`;
+      progressFill.style.width = `${((currentSlide + 1) / totalSlides) * 100}%`;
+    }
+
+    prevBtn.addEventListener('click', () => {
+      if (currentSlide > 0) {
+        currentSlide--;
+        updateSlides();
+      }
+    });
+
+    nextBtn.addEventListener('click', () => {
+      if (currentSlide < totalSlides - 1) {
+        currentSlide++;
+        updateSlides();
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'Space' || e.key === 'PageDown') {
+        if (currentSlide < totalSlides - 1) {
+          currentSlide++;
+          updateSlides();
+        }
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        if (currentSlide > 0) {
+          currentSlide--;
+          updateSlides();
+        }
+      } else if (e.key === 'Home') {
+        currentSlide = 0;
+        updateSlides();
+      } else if (e.key === 'End') {
+        currentSlide = totalSlides - 1;
+        updateSlides();
+      }
+    });
+
+    fullscreenBtn.addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    });
+
+    updateSlides();
+  </script>
+</body>
+</html>
